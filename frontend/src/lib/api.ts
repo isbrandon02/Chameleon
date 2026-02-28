@@ -131,6 +131,32 @@ export function getStreamUrl(
   return apiFetch<{ streamUrl: string }>(`/videos/${videoId}/stream-url`, getToken);
 }
 
+export function updateVideoTitle(
+  getToken: GetToken,
+  videoId: string,
+  title: string
+): Promise<VideoRecord> {
+  return apiFetch<VideoRecord>(`/videos/${videoId}`, getToken, {
+    method: "PATCH",
+    body: JSON.stringify({ title }),
+  });
+}
+
+export async function deleteVideo(
+  getToken: GetToken,
+  videoId: string
+): Promise<void> {
+  const token = await getToken();
+  const res = await fetch(`${API_BASE}/videos/${videoId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => res.statusText);
+    throw new Error(`${res.status} ${text}`);
+  }
+}
+
 export function updateOfferStatus(
   getToken: GetToken,
   offerId: string,

@@ -149,6 +149,10 @@ class OfferResponse(BaseModel):
     createdAt: str
 
 
+class UpdateVideoRequest(BaseModel):
+    title: str
+
+
 class UpdateOfferRequest(BaseModel):
     status: str
 
@@ -276,6 +280,66 @@ async def get_creator_videos(creatorId: str, user: dict = Depends(get_current_us
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
     return response.get("Items", [])
+
+
+@app.patch("/videos/{videoId}", response_model=VideoResponse)
+async def update_video(
+    videoId: str,
+    body: UpdateVideoRequest,
+    user: dict = Depends(get_current_user),
+):
+    try:
+        resp = videos_table.get_item(Key={"videoId": videoId})
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+    item = resp.get("Item")
+    if not item:
+        raise HTTPException(status_code=404, detail="Video not found")
+    if item["creatorId"] != user["sub"]:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    new_title = body.title.strip()
+    if not new_title:
+        raise HTTPException(status_code=400, detail="Title cannot be empty")
+
+    try:
+        response = videos_table.update_item(
+            Key={"videoId": videoId},
+            UpdateExpression="SET title = :t",
+            ExpressionAttributeValues={":t": new_title},
+            ReturnValues="ALL_NEW",
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+    return response["Attributes"]
+
+
+@app.delete("/videos/{videoId}", status_code=204)
+async def delete_video(
+    videoId: str,
+    user: dict = Depends(get_current_user),
+):
+    try:
+        resp = videos_table.get_item(Key={"videoId": videoId})
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+    item = resp.get("Item")
+    if not item:
+        raise HTTPException(status_code=404, detail="Video not found")
+    if item["creatorId"] != user["sub"]:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    try:
+        videos_table.delete_item(Key={"videoId": videoId})
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+    # Best-effort S3 cleanup
+    try:
+        s3_key = unquote(urlparse(item["s3Location"]).path.lstrip("/"))
+        s3.delete_object(Bucket=S3_BUCKET, Key=s3_key)
+    except Exception:
+        pass
 
 
 @app.post("/offers", response_model=OfferResponse, status_code=status.HTTP_201_CREATED)

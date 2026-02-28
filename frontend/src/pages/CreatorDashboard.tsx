@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Upload } from "lucide-react";
 import PageShell from "@/components/PageShell";
 import VideoCard from "@/components/VideoCard";
-import { getCreatorVideos, getStreamUrl, getVideoOffers, type VideoRecord } from "@/lib/api";
+import { deleteVideo, getCreatorVideos, getStreamUrl, getVideoOffers, updateVideoTitle, type VideoRecord } from "@/lib/api";
 
 export default function CreatorDashboard() {
   const { user, getAccessTokenSilently } = useAuth0();
@@ -54,6 +54,18 @@ export default function CreatorDashboard() {
       }
     })();
   }, [creatorId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function handleTitleChange(videoId: string, newTitle: string) {
+    const updated = await updateVideoTitle(getAccessTokenSilently, videoId, newTitle);
+    setVideos((prev) => prev.map((v) => (v.videoId === videoId ? { ...v, title: updated.title } : v)));
+  }
+
+  async function handleDelete(videoId: string) {
+    await deleteVideo(getAccessTokenSilently, videoId);
+    setVideos((prev) => prev.filter((v) => v.videoId !== videoId));
+    setOfferCounts((prev) => { const next = { ...prev }; delete next[videoId]; return next; });
+    setStreamUrls((prev) => { const next = { ...prev }; delete next[videoId]; return next; });
+  }
 
   const totalOffers = Object.values(offerCounts).reduce((a, b) => a + b, 0);
   const analyzedCount = videos.filter((v) => v.status === "analyzed").length;
@@ -130,6 +142,8 @@ export default function CreatorDashboard() {
                 video={v}
                 offerCount={offerCounts[v.videoId]}
                 streamUrl={streamUrls[v.videoId]}
+                onTitleChange={handleTitleChange}
+                onDelete={handleDelete}
               />
             ))}
           </div>
