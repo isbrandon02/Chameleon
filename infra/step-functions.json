@@ -1,0 +1,71 @@
+{
+  "Comment": "Chameleon video analysis workflow",
+  "StartAt": "UpdateStatusAnalyzing",
+  "States": {
+    "UpdateStatusAnalyzing": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "videos",
+        "Key": {
+          "videoId": {"S.$": "$.videoId"}
+        },
+        "UpdateExpression": "SET #s = :analyzing",
+        "ConditionExpression": "#s = :uploaded",
+        "ExpressionAttributeNames": {"#s": "status"},
+        "ExpressionAttributeValues": {
+          ":analyzing": {"S": "analyzing"},
+          ":uploaded": {"S": "uploaded"}
+        }
+      },
+      "ResultPath": null,
+      "Catch": [{
+        "ErrorEquals": ["DynamoDB.ConditionalCheckFailedException"],
+        "Next": "AlreadyProcessed"
+      }],
+      "Next": "InvokeLambda"
+    },
+    "InvokeLambda": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-1:730335328499:function:chameleon-video-analyzer",
+        "Payload.$": "$"
+      },
+      "Retry": [{
+        "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "States.TaskFailed"],
+        "IntervalSeconds": 30,
+        "MaxAttempts": 3,
+        "BackoffRate": 2
+      }],
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "MarkError",
+        "ResultPath": "$.error"
+      }],
+      "Next": "Done"
+    },
+    "Done": {
+      "Type": "Succeed"
+    },
+    "AlreadyProcessed": {
+      "Type": "Succeed"
+    },
+    "MarkError": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "videos",
+        "Key": {
+          "videoId": {"S.$": "$.videoId"}
+        },
+        "UpdateExpression": "SET #s = :error",
+        "ExpressionAttributeNames": {"#s": "status"},
+        "ExpressionAttributeValues": {
+          ":error": {"S": "error"}
+        }
+      },
+      "End": true
+    }
+  }
+}
