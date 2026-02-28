@@ -115,6 +115,25 @@ s3_key = unquote(urlparse(s3_location).path.lstrip("/"))
 
 The React frontend is already built and deployed (`frontend/`). To modify and redeploy:
 
+### Prerequisites
+
+1. **Node.js + npm** — [nodejs.org](https://nodejs.org)
+2. **AWS CLI** — [Install guide](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html), then configure the `chameleon` profile:
+   ```bash
+   aws configure --profile chameleon
+   # AWS Access Key ID: <get from Andy>
+   # AWS Secret Access Key: <get from Andy>
+   # Default region: us-east-1
+   # Default output format: json
+   ```
+3. **`frontend/.env`** — gitignored, get from Andy. Should contain:
+   ```
+   VITE_AUTH0_DOMAIN=dev-n8safte6j1odv3jb.us.auth0.com
+   VITE_AUTH0_CLIENT_ID=jeYfrcx27JDXTjH7s9uTwPk8o0yb1Mhp
+   VITE_AUTH0_AUDIENCE=https://api.chameleon.com
+   VITE_API_BASE=https://uw88poluwh.execute-api.us-east-1.amazonaws.com
+   ```
+
 ### Connecting to the Backend
 
 All API calls go through API Gateway (HTTPS). The `frontend/.env` is already configured:
