@@ -72,7 +72,7 @@ export default function UploadVideo() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="title" className="mb-2 block text-[13px] font-medium text-white/50">
+            <label htmlFor="title" className="mb-2 block text-[13px] font-medium text-white/70">
               Title
             </label>
             <input
@@ -87,7 +87,7 @@ export default function UploadVideo() {
           </div>
 
           <div>
-            <label htmlFor="description" className="mb-2 block text-[13px] font-medium text-white/50">
+            <label htmlFor="description" className="mb-2 block text-[13px] font-medium text-white/70">
               Description
             </label>
             <textarea
@@ -102,7 +102,7 @@ export default function UploadVideo() {
           </div>
 
           <div>
-            <label htmlFor="file" className="mb-2 block text-[13px] font-medium text-white/50">
+            <label htmlFor="file" className="mb-2 block text-[13px] font-medium text-white/70">
               Video file
             </label>
             <input
@@ -112,14 +112,14 @@ export default function UploadVideo() {
               accept="video/*"
               required
               disabled={uploading}
-              className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 text-[14px] text-white/50 file:mr-3 file:rounded-full file:border-0 file:bg-white/[0.06] file:px-3 file:py-1 file:text-[12px] file:font-medium file:text-white/60 disabled:opacity-50"
+              className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 text-[14px] text-white/70 file:mr-3 file:rounded-full file:border-0 file:bg-white/[0.06] file:px-3 file:py-1 file:text-[12px] file:font-medium file:text-white/70 disabled:opacity-50"
             />
           </div>
 
           {uploading && (
             <div>
               <div className="mb-2 flex items-center justify-between text-[13px]">
-                <span className="text-white/40">Uploading</span>
+                <span className="text-white/70">Uploading</span>
                 <span className="font-medium text-[#4ADE80]">{progress}%</span>
               </div>
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">

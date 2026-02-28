@@ -77,7 +77,7 @@ export default function CreatorDashboard() {
           <div>
             <h1 className="text-[28px] font-semibold tracking-tight">My Videos</h1>
             {!loading && videos.length > 0 && (
-              <div className="mt-2 flex items-center gap-4 text-[13px] text-white/30">
+              <div className="mt-2 flex items-center gap-4 text-[13px] text-white/70">
                 <span>{videos.length} video{videos.length !== 1 ? "s" : ""}</span>
                 <span className="h-3 w-px bg-white/10" />
                 <span>{analyzedCount} analyzed</span>
@@ -119,10 +119,10 @@ export default function CreatorDashboard() {
         {!loading && !error && videos.length === 0 && (
           <div className="flex flex-col items-center py-28 text-center">
             <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.03]">
-              <Upload className="h-6 w-6 text-white/20" />
+              <Upload className="h-6 w-6 text-white/70" />
             </div>
             <p className="text-[15px] font-medium text-white/70">No videos yet</p>
-            <p className="mt-1.5 text-[14px] text-white/30">
+            <p className="mt-1.5 text-[14px] text-white/70">
               Upload your first video to start getting sponsorship offers.
             </p>
             <Link

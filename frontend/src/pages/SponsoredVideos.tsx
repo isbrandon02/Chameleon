@@ -21,14 +21,14 @@ interface EnrichedOffer extends Offer {
 function EditStatusBadge({ editStatus }: { editStatus?: string }) {
   if (!editStatus) {
     return (
-      <span className="rounded-full bg-white/[0.06] px-2.5 py-1 text-[11px] font-medium text-white/40">
+      <span className="rounded-full bg-white/[0.06] px-2.5 py-1 text-[11px] font-medium text-white/70">
         Queued
       </span>
     );
   }
   if (editStatus === "editing") {
     return (
-      <span className="flex items-center gap-1.5 rounded-full bg-white/[0.06] px-2.5 py-1 text-[11px] font-medium text-white/40">
+      <span className="flex items-center gap-1.5 rounded-full bg-white/[0.06] px-2.5 py-1 text-[11px] font-medium text-white/70">
         <Loader2 className="h-3 w-3 animate-spin" />
         Processing
       </span>
@@ -124,7 +124,7 @@ export default function SponsoredVideos() {
           <h1 className="text-[28px] font-semibold tracking-tight">
             Sponsored Videos
           </h1>
-          <p className="mt-2 text-[14px] text-white/30">
+          <p className="mt-2 text-[14px] text-white/70">
             {isCreator
               ? "Videos where you accepted a sponsorship deal — edited versions appear here."
               : "Videos you sponsored — edited versions appear here after the creator accepts."}
@@ -147,12 +147,12 @@ export default function SponsoredVideos() {
         {!loading && !error && offers.length === 0 && (
           <div className="flex flex-col items-center py-28 text-center">
             <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.03]">
-              <Clapperboard className="h-6 w-6 text-white/20" />
+              <Clapperboard className="h-6 w-6 text-white/70" />
             </div>
             <p className="text-[15px] font-medium text-white/70">
               No sponsored videos yet
             </p>
-            <p className="mt-1.5 text-[14px] text-white/30">
+            <p className="mt-1.5 text-[14px] text-white/70">
               {isCreator
                 ? "Accept a sponsorship offer on one of your videos to see the edited version here."
                 : "Make an offer on a video and wait for the creator to accept."}
@@ -172,11 +172,11 @@ export default function SponsoredVideos() {
                     <p className="truncate text-[15px] font-medium text-white">
                       {offer.videoTitle ?? offer.videoId}
                     </p>
-                    <p className="mt-1 text-[13px] text-white/30">
+                    <p className="mt-1 text-[13px] text-white/70">
                       ${Number(offer.proposedBudget).toLocaleString()} deal
                       {offer.message && <> · {offer.message}</>}
                     </p>
-                    <p className="mt-0.5 text-[12px] text-white/20">
+                    <p className="mt-0.5 text-[12px] text-white/70">
                       {isCreator
                         ? `Sponsor: ${offer.companyName || offer.companyId}`
                         : `Creator: ${offer.creatorName || offer.creatorId}`}
@@ -199,7 +199,7 @@ export default function SponsoredVideos() {
                         />
                       ) : (
                         <button
-                          className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-[13px] font-medium text-white/60 transition-colors hover:bg-white/[0.07] hover:text-white disabled:opacity-50"
+                          className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-[13px] font-medium text-white/70 transition-colors hover:bg-white/[0.07] hover:text-white disabled:opacity-50"
                           disabled={offer.loadingStream}
                           onClick={() => loadStream(offer.offerId)}
                         >
@@ -217,7 +217,7 @@ export default function SponsoredVideos() {
                   )}
 
                   {offer.editStatus === "editing" && (
-                    <p className="text-[13px] text-white/30">
+                    <p className="text-[13px] text-white/70">
                       The edited video is being generated — check back in a minute.
                     </p>
                   )}
@@ -229,7 +229,7 @@ export default function SponsoredVideos() {
                   )}
 
                   {!offer.editStatus && (
-                    <p className="text-[13px] text-white/30">
+                    <p className="text-[13px] text-white/70">
                       Video editing will start shortly.
                     </p>
                   )}

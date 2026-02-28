@@ -27,13 +27,13 @@ export default function Navbar() {
             <>
               <Link
                 to="/dashboard"
-                className="text-[14px] font-medium text-white/35 transition-colors hover:text-white"
+                className="text-[14px] font-medium text-white/70 transition-colors hover:text-white"
               >
                 My Videos
               </Link>
               <Link
                 to="/upload"
-                className="text-[14px] font-medium text-white/35 transition-colors hover:text-white"
+                className="text-[14px] font-medium text-white/70 transition-colors hover:text-white"
               >
                 Upload
               </Link>
@@ -42,7 +42,7 @@ export default function Navbar() {
           {isCompany && (
             <Link
               to="/browse"
-              className="text-[14px] font-medium text-white/35 transition-colors hover:text-white"
+              className="text-[14px] font-medium text-white/70 transition-colors hover:text-white"
             >
               Browse
             </Link>
@@ -50,18 +50,18 @@ export default function Navbar() {
           {(isCreator || isCompany) && (
             <Link
               to="/sponsored"
-              className="text-[14px] font-medium text-white/35 transition-colors hover:text-white"
+              className="text-[14px] font-medium text-white/70 transition-colors hover:text-white"
             >
               Sponsored
             </Link>
           )}
 
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.06] text-[11px] font-semibold text-white/50">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.06] text-[11px] font-semibold text-white/70">
             {user?.name?.slice(0, 2).toUpperCase() ?? "U"}
           </div>
 
           <button
-            className="text-white/20 transition-colors hover:text-white/50"
+            className="text-white/70 transition-colors hover:text-white/70"
             onClick={() =>
               logout({ logoutParams: { returnTo: window.location.origin } })
             }

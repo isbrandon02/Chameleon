@@ -62,7 +62,7 @@ export default function Landing() {
           <div className="flex items-center gap-6">
             <button
               onClick={() => loginWithRedirect()}
-              className="text-[14px] font-medium text-white/40 transition-colors hover:text-white"
+              className="text-[14px] font-medium text-white/80 transition-colors hover:text-white"
             >
               Sign in
             </button>
@@ -85,7 +85,7 @@ export default function Landing() {
               <br />
               That Blends In
             </h1>
-            <p className="anim-delay-1 mt-7 max-w-[26rem] text-[19px] leading-[1.7] text-white/40">
+            <p className="anim-delay-1 mt-7 max-w-[26rem] text-[19px] leading-[1.7] text-white/80">
               Chameleon blends brands directly into video content.
               No pauses. No disruption. Just seamless integration.
             </p>
@@ -99,7 +99,7 @@ export default function Landing() {
               </button>
               <button
                 onClick={() => login("company")}
-                className="text-[16px] font-medium text-white/35 transition-colors hover:text-white/70"
+                className="text-[16px] font-medium text-white/70 transition-colors hover:text-white/80"
               >
                 I represent a brand
               </button>
@@ -196,14 +196,14 @@ export default function Landing() {
                 <span className="text-[14px] font-semibold text-[#4ADE80]/40">
                   {step.num}
                 </span>
-                <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1 text-[12px] font-medium text-white/25">
+                <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1 text-[12px] font-medium text-white/70">
                   {step.tag}
                 </span>
               </div>
               <h3 className="text-[19px] font-semibold tracking-tight text-white/90">
                 {step.title}
               </h3>
-              <p className="mt-2.5 text-[15px] leading-relaxed text-white/30">
+              <p className="mt-2.5 text-[15px] leading-relaxed text-white/70">
                 {step.desc}
               </p>
             </div>
@@ -222,7 +222,7 @@ export default function Landing() {
             <h2 className="text-[clamp(2rem,3.5vw,2.8rem)] font-semibold leading-snug tracking-tight">
               Built on a simple belief.
             </h2>
-            <p className="mt-6 max-w-md text-[18px] leading-[1.7] text-white/35">
+            <p className="mt-6 max-w-md text-[18px] leading-[1.7] text-white/70">
               The best advertising doesn't feel like advertising.
               It lives inside the content. It respects the viewer.
               It rewards the creator. And it delivers for the brand.
@@ -242,7 +242,7 @@ export default function Landing() {
                 <div className="text-[24px] font-semibold text-white/90">
                   {stat.value}
                 </div>
-                <div className="mt-2 text-[14px] text-white/30">{stat.label}</div>
+                <div className="mt-2 text-[14px] text-white/70">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -259,7 +259,7 @@ export default function Landing() {
           <h2 className="relative text-[clamp(1.8rem,4vw,3rem)] font-bold tracking-tight">
             Ready to disappear?
           </h2>
-          <p className="relative mx-auto mt-5 max-w-lg text-[17px] leading-relaxed text-white/35">
+          <p className="relative mx-auto mt-5 max-w-lg text-[17px] leading-relaxed text-white/70">
             Join creators and brands building a new kind of advertising.
             One that viewers actually want to see.
           </p>
@@ -273,7 +273,7 @@ export default function Landing() {
             </button>
             <button
               onClick={() => login("company")}
-              className="text-[16px] font-medium text-white/35 transition-colors hover:text-white/70"
+              className="text-[16px] font-medium text-white/70 transition-colors hover:text-white/80"
             >
               I represent a brand
             </button>

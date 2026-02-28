@@ -68,7 +68,7 @@ export default function VideoCard({
             />
           ) : (
             <div className="flex h-full items-center justify-center">
-              <Play className="h-8 w-8 text-white/10" />
+              <Play className="h-8 w-8 text-white/70" />
             </div>
           )}
 
@@ -112,7 +112,7 @@ export default function VideoCard({
               disabled={saving}
               className="shrink-0 transition-colors"
             >
-              <X className="h-3.5 w-3.5 text-white/30 hover:text-white/60" />
+              <X className="h-3.5 w-3.5 text-white/70 hover:text-white/60" />
             </button>
           </div>
         ) : (
@@ -129,7 +129,7 @@ export default function VideoCard({
                     className="transition-colors"
                     title="Rename"
                   >
-                    <Pencil className="h-3.5 w-3.5 text-white/25 hover:text-white/70" />
+                    <Pencil className="h-3.5 w-3.5 text-white/70 hover:text-white/70" />
                   </button>
                 )}
 
@@ -139,7 +139,7 @@ export default function VideoCard({
                     className="transition-colors"
                     title="Delete"
                   >
-                    <Trash2 className="h-3.5 w-3.5 text-white/25 hover:text-red-400" />
+                    <Trash2 className="h-3.5 w-3.5 text-white/70 hover:text-red-400" />
                   </button>
                 )}
 
@@ -155,7 +155,7 @@ export default function VideoCard({
                       onClick={() => setConfirmDelete(false)}
                       className="transition-colors"
                     >
-                      <X className="h-3 w-3 text-white/30 hover:text-white/60" />
+                      <X className="h-3 w-3 text-white/70 hover:text-white/60" />
                     </button>
                   </>
                 )}
@@ -164,7 +164,7 @@ export default function VideoCard({
           </div>
         )}
 
-        <p className="mt-1 text-[12px] text-white/25">
+        <p className="mt-1 text-[12px] text-white/70">
           {new Date(video.createdAt).toLocaleDateString()}
         </p>
       </div>
