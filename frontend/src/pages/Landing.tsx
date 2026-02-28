@@ -1,8 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { ArrowRight, Video, Building2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const ROLES_CLAIM = "https://chameleon.com/roles";
 
@@ -21,81 +20,63 @@ export default function Landing() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* Hero */}
-      <header className="border-b px-6 py-4">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <span className="text-xl font-bold">Chameleon</span>
-          <Button
-            variant="ghost"
+    <div className="flex min-h-screen flex-col bg-white">
+      {/* Navbar */}
+      <header className="px-8 py-6">
+        <div className="mx-auto flex max-w-5xl items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-violet-500" />
+            <span className="text-base font-semibold tracking-tight text-neutral-900">
+              Chameleon
+            </span>
+          </div>
+          <button
+            className="text-sm text-neutral-400 transition-colors hover:text-neutral-900"
             onClick={() => loginWithRedirect()}
           >
             Sign in
-          </Button>
+          </button>
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col items-center justify-center px-6 py-20 text-center">
-        <h1 className="mb-4 text-5xl font-extrabold tracking-tight">
-          Sponsorships, matched by AI
+      {/* Hero */}
+      <main className="flex flex-1 flex-col items-center justify-center px-6 pb-24 pt-16 text-center">
+        <h1 className="mb-5 max-w-2xl text-6xl font-bold tracking-tight text-neutral-900">
+          Sponsorships,<br />matched by AI
         </h1>
-        <p className="mb-10 max-w-xl text-lg text-muted-foreground">
+        <p className="mb-12 max-w-md text-base leading-relaxed text-neutral-400">
           Chameleon connects creators with brands through automated video
-          analysis — no back-and-forth emails, just the right deal at the right
-          time.
+          analysis — no back-and-forth emails, just the right deal at the right time.
         </p>
 
-        <div className="flex flex-col gap-4 sm:flex-row">
-          <Card className="w-72 text-left">
-            <CardHeader>
-              <Video className="mb-2 h-8 w-8" />
-              <CardTitle>I'm a Creator</CardTitle>
-              <CardDescription>
-                Upload your videos. Our AI analyzes content and topics so
-                brands can find you.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                className="w-full"
-                onClick={() =>
-                  (localStorage.setItem("pendingRole", "creator"),
-                  loginWithRedirect({
-                    appState: { returnTo: "/dashboard" },
-                    authorizationParams: { screen_hint: "signup", user_type: "creator" },
-                  }))
-                }
-              >
-                Join as Creator <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
+        <div className="flex items-center gap-4">
+          <Button
+            className="h-11 rounded-full bg-neutral-900 px-6 text-sm font-medium text-white hover:bg-neutral-700"
+            onClick={() => (
+              localStorage.setItem("pendingRole", "creator"),
+              loginWithRedirect({
+                appState: { returnTo: "/dashboard" },
+                authorizationParams: { screen_hint: "signup", user_type: "creator" },
+              })
+            )}
+          >
+            Join as Creator <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+          </Button>
 
-          <Card className="w-72 text-left">
-            <CardHeader>
-              <Building2 className="mb-2 h-8 w-8" />
-              <CardTitle>I'm a Company</CardTitle>
-              <CardDescription>
-                Browse AI-analyzed videos and make sponsorship offers to the
-                creators that fit your brand.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                className="w-full"
-                variant="outline"
-                onClick={() =>
-                  (localStorage.setItem("pendingRole", "company"),
-                  loginWithRedirect({
-                    appState: { returnTo: "/browse" },
-                    authorizationParams: { screen_hint: "signup", user_type: "company" },
-                  }))
-                }
-              >
-                Join as Company <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="h-4 w-px bg-neutral-200" />
+
+          <button
+            className="text-sm text-neutral-400 transition-colors hover:text-neutral-900"
+            onClick={() => (
+              localStorage.setItem("pendingRole", "company"),
+              loginWithRedirect({
+                appState: { returnTo: "/browse" },
+                authorizationParams: { screen_hint: "signup", user_type: "company" },
+              })
+            )}
+          >
+            I'm a Company <ArrowRight className="ml-1 inline h-3.5 w-3.5" />
+          </button>
         </div>
       </main>
     </div>
