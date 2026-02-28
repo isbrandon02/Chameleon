@@ -23,7 +23,7 @@ index_id = index_data.get('_id')
 def add_video(video_name, query):
     """Upload a video to the index, wait for indexing, and search for a query in it"""
     # Construct the full filepath from the default path
-    filepath = f"../resources/{video_name}.MOV"
+    filepath = f"../resources/{video_name}"
     
     # Upload the asset
     with open(filepath, "rb") as video_file:
@@ -84,5 +84,5 @@ def delete_video(indexed_asset_id):
 
 
 
-asset_id, results = add_video("metal_can_test", "find the timestamp from start to end where a metal can can be visible")
+asset_id, results = add_video("Demo.mp4", "Identify timestamps where a visible consumer product appears, especially items that look branded or commercially packaged, such as skincare bottles, water bottles, cosmetics, food packaging, or electronics. Print out only the start and end timestamsp, don't say anything else.")
 delete_video(asset_id)
