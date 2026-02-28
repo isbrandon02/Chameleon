@@ -96,9 +96,13 @@ export default function CreatorDashboard() {
 
         {/* Loading */}
         {loading && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-56 rounded-xl" />
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i}>
+                <Skeleton className="w-full rounded-xl" style={{ aspectRatio: "9/16" }} />
+                <Skeleton className="mt-2 h-4 w-3/4 rounded" />
+                <Skeleton className="mt-1 h-3 w-1/3 rounded" />
+              </div>
             ))}
           </div>
         )}
@@ -129,7 +133,7 @@ export default function CreatorDashboard() {
 
         {/* Grid */}
         {!loading && videos.length > 0 && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {videos.map((v) => (
               <VideoCard
                 key={v.videoId}
