@@ -5,12 +5,13 @@ import { ArrowRight, Upload } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import VideoCard from "@/components/VideoCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getCreatorVideos, getVideoOffers, type VideoRecord } from "@/lib/api";
+import { getCreatorVideos, getStreamUrl, getVideoOffers, type VideoRecord } from "@/lib/api";
 
 export default function CreatorDashboard() {
   const { user, getAccessTokenSilently } = useAuth0();
   const [videos, setVideos] = useState<VideoRecord[]>([]);
   const [offerCounts, setOfferCounts] = useState<Record<string, number>>({});
+  const [streamUrls, setStreamUrls] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,6 +36,18 @@ export default function CreatorDashboard() {
           })
         );
         setOfferCounts(Object.fromEntries(counts.map(({ id, count }) => [id, count])));
+
+        const urls = await Promise.all(
+          vids.map(async (v) => {
+            try {
+              const { streamUrl } = await getStreamUrl(getAccessTokenSilently, v.videoId);
+              return { id: v.videoId, url: streamUrl };
+            } catch {
+              return { id: v.videoId, url: "" };
+            }
+          })
+        );
+        setStreamUrls(Object.fromEntries(urls.map(({ id, url }) => [id, url])));
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to load videos");
       } finally {
@@ -122,6 +135,7 @@ export default function CreatorDashboard() {
                 key={v.videoId}
                 video={v}
                 offerCount={offerCounts[v.videoId]}
+                streamUrl={streamUrls[v.videoId]}
               />
             ))}
           </div>

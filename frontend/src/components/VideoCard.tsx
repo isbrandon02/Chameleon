@@ -1,3 +1,4 @@
+import { Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { VideoRecord } from "@/lib/api";
 
@@ -7,33 +8,33 @@ const statusDot: Record<VideoRecord["status"], string> = {
   analyzed: "bg-emerald-400",
 };
 
-const thumbnailGradient = [
-  "from-violet-100 to-indigo-100",
-  "from-sky-100 to-cyan-100",
-  "from-rose-100 to-pink-100",
-  "from-amber-100 to-yellow-100",
-  "from-emerald-100 to-teal-100",
-];
-
-function pickGradient(id: string) {
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
-  return thumbnailGradient[Math.abs(hash) % thumbnailGradient.length];
-}
-
 interface Props {
   video: VideoRecord;
   offerCount?: number;
+  streamUrl?: string;
 }
 
-export default function VideoCard({ video, offerCount }: Props) {
+export default function VideoCard({ video, offerCount, streamUrl }: Props) {
   const topics = video.analysisReport?.topics ?? [];
 
   return (
     <Link to={`/videos/${video.videoId}`}>
       <div className="group rounded-xl border border-neutral-100 bg-white transition-shadow hover:shadow-md">
         {/* Thumbnail */}
-        <div className={`h-36 rounded-t-xl bg-gradient-to-br ${pickGradient(video.videoId)}`} />
+        <div className="relative h-36 overflow-hidden rounded-t-xl bg-neutral-100">
+          {streamUrl ? (
+            <video
+              src={streamUrl}
+              preload="metadata"
+              muted
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center">
+              <Play className="h-7 w-7 text-neutral-300" />
+            </div>
+          )}
+        </div>
 
         {/* Content */}
         <div className="p-4">
