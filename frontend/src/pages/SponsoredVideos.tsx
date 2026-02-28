@@ -178,8 +178,8 @@ export default function SponsoredVideos() {
                     </p>
                     <p className="mt-0.5 text-[12px] text-white/20">
                       {isCreator
-                        ? `Sponsor: ${offer.companyId}`
-                        : `Creator: ${offer.creatorId}`}
+                        ? `Sponsor: ${offer.companyName || offer.companyId}`
+                        : `Creator: ${offer.creatorName || offer.creatorId}`}
                     </p>
                   </div>
                   <div className="shrink-0 pt-0.5">

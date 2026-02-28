@@ -241,6 +241,9 @@ export default function VideoDetail() {
                           {o.status}
                         </span>
                       </div>
+                      <p className="mt-0.5 text-[12px] text-white/25">
+                        {o.companyName || o.companyId}
+                      </p>
                       {o.message && (
                         <p className="mt-1 truncate text-[13px] text-white/25">{o.message}</p>
                       )}

@@ -33,6 +33,7 @@ export interface UploadUrlResponse {
 export interface VideoRecord {
   videoId: string;
   creatorId: string;
+  creatorName?: string;
   title: string;
   description?: string;
   s3Location: string;
@@ -54,7 +55,9 @@ export interface Offer {
   offerId: string;
   videoId: string;
   companyId: string;
+  companyName?: string;
   creatorId: string;
+  creatorName?: string;
   proposedBudget: number;
   message?: string;
   status: "pending" | "accepted" | "rejected";

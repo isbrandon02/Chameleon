@@ -105,7 +105,7 @@ async def get_current_user(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc))
 
     roles = payload.get("https://chameleon.com/roles", [])
-    return {"sub": payload["sub"], "roles": roles}
+    return {"sub": payload["sub"], "roles": roles, "name": payload.get("name", "")}
 
 
 # ---------------------------------------------------------------------------
@@ -123,6 +123,7 @@ class RegisterVideoRequest(BaseModel):
 class VideoResponse(BaseModel):
     videoId: str
     creatorId: str
+    creatorName: Optional[str] = None
     title: str
     description: Optional[str] = None
     s3Location: str
@@ -142,7 +143,9 @@ class OfferResponse(BaseModel):
     offerId: str
     videoId: str
     companyId: str
+    companyName: Optional[str] = None
     creatorId: str
+    creatorName: Optional[str] = None
     proposedBudget: float
     message: Optional[str] = None
     status: str
@@ -203,6 +206,7 @@ async def register_video(
     item = {
         "videoId": body.videoId,
         "creatorId": creator_id,
+        "creatorName": user.get("name", ""),
         "title": body.title,
         "description": body.description or "",
         "s3Location": body.s3Location,
@@ -363,7 +367,9 @@ async def create_offer(
         "offerId": offer_id,
         "videoId": body.videoId,
         "companyId": company_id,
+        "companyName": user.get("name", ""),
         "creatorId": video["creatorId"],
+        "creatorName": video.get("creatorName", ""),
         "proposedBudget": str(body.proposedBudget),
         "message": body.message or "",
         "status": "pending",
