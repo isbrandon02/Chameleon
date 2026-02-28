@@ -127,6 +127,7 @@ class VideoResponse(BaseModel):
     status: str
     createdAt: str
     analysisReport: Optional[dict] = None
+    adInsertTimecode: Optional[str] = None
 
 
 class CreateOfferRequest(BaseModel):

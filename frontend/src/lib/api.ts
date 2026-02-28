@@ -38,6 +38,7 @@ export interface VideoRecord {
   s3Location: string;
   status: "uploaded" | "analyzing" | "analyzed";
   analysisReport?: AnalysisReport;
+  adInsertTimecode?: string;
   createdAt: string;
 }
 

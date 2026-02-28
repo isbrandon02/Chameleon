@@ -212,6 +212,21 @@ export default function VideoDetail() {
           />
         )}
 
+        {/* Ad Insertion Window */}
+        {video.adInsertTimecode && (
+          <div className="rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm dark:border-yellow-800 dark:bg-yellow-950">
+            <span className="font-medium text-yellow-800 dark:text-yellow-200">
+              Ad insertion window:
+            </span>{" "}
+            <span className="font-mono text-yellow-900 dark:text-yellow-100">
+              {video.adInsertTimecode}
+            </span>
+            <span className="ml-2 text-yellow-700 dark:text-yellow-300">
+              — identified by TwelveLabs AI
+            </span>
+          </div>
+        )}
+
         {/* Analysis Report */}
         {report && (
           <Card>
