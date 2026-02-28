@@ -2,9 +2,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Upload } from "lucide-react";
-import Navbar from "@/components/Navbar";
+import PageShell from "@/components/PageShell";
 import VideoCard from "@/components/VideoCard";
-import { Skeleton } from "@/components/ui/skeleton";
 import { getCreatorVideos, getStreamUrl, getVideoOffers, type VideoRecord } from "@/lib/api";
 
 export default function CreatorDashboard() {
@@ -60,25 +59,22 @@ export default function CreatorDashboard() {
   const analyzedCount = videos.filter((v) => v.status === "analyzed").length;
 
   return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
-
-      <main className="mx-auto max-w-5xl px-8 pb-16">
-        {/* Header */}
-        <div className="mb-8 flex items-end justify-between">
+    <PageShell>
+      <div className="mx-auto max-w-6xl px-6 pb-20 pt-10 sm:px-10">
+        <div className="mb-10 flex items-end justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">
-              My Videos
-            </h1>
+            <h1 className="text-[28px] font-semibold tracking-tight">My Videos</h1>
             {!loading && videos.length > 0 && (
-              <div className="mt-1.5 flex items-center gap-4 text-sm text-neutral-400">
+              <div className="mt-2 flex items-center gap-4 text-[13px] text-white/30">
                 <span>{videos.length} video{videos.length !== 1 ? "s" : ""}</span>
-                <span className="h-3 w-px bg-neutral-200" />
+                <span className="h-3 w-px bg-white/10" />
                 <span>{analyzedCount} analyzed</span>
                 {totalOffers > 0 && (
                   <>
-                    <span className="h-3 w-px bg-neutral-200" />
-                    <span className="text-violet-600">{totalOffers} pending offer{totalOffers !== 1 ? "s" : ""}</span>
+                    <span className="h-3 w-px bg-white/10" />
+                    <span className="text-[#4ADE80]">
+                      {totalOffers} pending offer{totalOffers !== 1 ? "s" : ""}
+                    </span>
                   </>
                 )}
               </div>
@@ -87,53 +83,47 @@ export default function CreatorDashboard() {
 
           <Link
             to="/upload"
-            className="flex items-center gap-1.5 rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-700"
+            className="flex items-center gap-2 rounded-full bg-[#4ADE80] px-5 py-2.5 text-[13px] font-semibold text-[#0B0F0E] transition-all hover:brightness-110"
           >
             <Upload className="h-3.5 w-3.5" />
             Upload
           </Link>
         </div>
 
-        {/* Loading */}
         {loading && (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i}>
-                <Skeleton className="w-full rounded-xl" style={{ aspectRatio: "9/16" }} />
-                <Skeleton className="mt-2 h-4 w-3/4 rounded" />
-                <Skeleton className="mt-1 h-3 w-1/3 rounded" />
+                <div className="w-full animate-pulse rounded-2xl bg-white/[0.04]" style={{ aspectRatio: "9/16" }} />
+                <div className="mt-3 h-4 w-3/4 animate-pulse rounded bg-white/[0.04]" />
+                <div className="mt-2 h-3 w-1/3 animate-pulse rounded bg-white/[0.03]" />
               </div>
             ))}
           </div>
         )}
 
-        {/* Error */}
-        {error && (
-          <p className="text-sm text-red-500">{error}</p>
-        )}
+        {error && <p className="text-[14px] text-red-400">{error}</p>}
 
-        {/* Empty state */}
         {!loading && !error && videos.length === 0 && (
-          <div className="flex flex-col items-center py-24 text-center">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100">
-              <Upload className="h-5 w-5 text-neutral-400" />
+          <div className="flex flex-col items-center py-28 text-center">
+            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.03]">
+              <Upload className="h-6 w-6 text-white/20" />
             </div>
-            <p className="mb-1 text-sm font-medium text-neutral-900">No videos yet</p>
-            <p className="mb-6 text-sm text-neutral-400">
+            <p className="text-[15px] font-medium text-white/70">No videos yet</p>
+            <p className="mt-1.5 text-[14px] text-white/30">
               Upload your first video to start getting sponsorship offers.
             </p>
             <Link
               to="/upload"
-              className="flex items-center gap-1.5 text-sm font-medium text-neutral-900 underline-offset-4 hover:underline"
+              className="mt-6 flex items-center gap-1.5 text-[14px] font-medium text-[#4ADE80] transition-colors hover:text-[#22C55E]"
             >
               Upload a video <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         )}
 
-        {/* Grid */}
         {!loading && videos.length > 0 && (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
             {videos.map((v) => (
               <VideoCard
                 key={v.videoId}
@@ -144,7 +134,7 @@ export default function CreatorDashboard() {
             ))}
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </PageShell>
   );
 }

@@ -4,6 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chameleon — Sponsorship Marketplace</title>
+    <style>
+      body { margin: 0; background: #0B0F0E; }
+      #root:empty::after {
+        content: '';
+        display: block;
+        width: 24px;
+        height: 24px;
+        margin: 40vh auto;
+        border: 2px solid rgba(74,222,128,0.15);
+        border-top-color: #4ADE80;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
   </head>
   <body>
     <div id="root"></div>

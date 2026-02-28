@@ -1,7 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const ROLES_CLAIM = "https://chameleon.com/roles";
 
@@ -14,14 +13,12 @@ export default function Navbar() {
   const isCompany = roles.includes("company");
 
   return (
-    <nav className="px-8 py-5 border-b border-white/5">
+    <nav className="border-b border-white/[0.04] px-6 py-5 sm:px-10">
       <div className="mx-auto flex max-w-6xl items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-cham-green/15">
-            <span className="text-sm">🦎</span>
-          </div>
-          <span className="text-base font-semibold tracking-tight text-white">
-            Chameleon
+          <img src="/chameleon.png" alt="" className="h-7 w-7 object-contain" />
+          <span className="text-[17px] font-semibold tracking-tight text-white">
+            chameleon
           </span>
         </Link>
 
@@ -30,13 +27,13 @@ export default function Navbar() {
             <>
               <Link
                 to="/dashboard"
-                className="text-sm text-white/40 transition-colors hover:text-cham-green"
+                className="text-[14px] font-medium text-white/35 transition-colors hover:text-white"
               >
                 My Videos
               </Link>
               <Link
                 to="/upload"
-                className="text-sm text-white/40 transition-colors hover:text-cham-green"
+                className="text-[14px] font-medium text-white/35 transition-colors hover:text-white"
               >
                 Upload
               </Link>
@@ -45,21 +42,18 @@ export default function Navbar() {
           {isCompany && (
             <Link
               to="/browse"
-              className="text-sm text-white/40 transition-colors hover:text-cham-green"
+              className="text-[14px] font-medium text-white/35 transition-colors hover:text-white"
             >
               Browse
             </Link>
           )}
 
-          <Avatar className="h-7 w-7 ring-1 ring-white/10">
-            <AvatarImage src={user?.picture} alt={user?.name} />
-            <AvatarFallback className="bg-cham-green/10 text-xs text-cham-green">
-              {user?.name?.slice(0, 2).toUpperCase() ?? "U"}
-            </AvatarFallback>
-          </Avatar>
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.06] text-[11px] font-semibold text-white/50">
+            {user?.name?.slice(0, 2).toUpperCase() ?? "U"}
+          </div>
 
           <button
-            className="text-white/20 transition-colors hover:text-white/60"
+            className="text-white/20 transition-colors hover:text-white/50"
             onClick={() =>
               logout({ logoutParams: { returnTo: window.location.origin } })
             }
