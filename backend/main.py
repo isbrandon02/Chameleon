@@ -173,8 +173,6 @@ async def get_upload_url(
     video_id = str(uuid.uuid4())
     ext = fileName.rsplit(".", 1)[-1] if "." in fileName else "mp4"
     s3_key = f"videos/{creator_id}/{video_id}.{ext}"
-    # [dbg-a4817d] H:B-D
-    print(f"[dbg-a4817d] upload-url called: fileName={fileName!r} contentType={contentType!r} creator={creator_id!r} bucket={S3_BUCKET!r} key={s3_key!r}")
 
     try:
         upload_url = s3.generate_presigned_url(
@@ -186,11 +184,7 @@ async def get_upload_url(
             },
             ExpiresIn=3600,
         )
-        # [dbg-a4817d] H:B-D
-        print(f"[dbg-a4817d] presigned_url_ok: url_prefix={upload_url[:80]!r}")
     except Exception as exc:
-        # [dbg-a4817d] H:C
-        print(f"[dbg-a4817d] presigned_url_error: {exc!r}")
         raise HTTPException(status_code=500, detail=f"Could not generate upload URL: {exc}")
 
     return {"uploadUrl": upload_url, "videoId": video_id, "s3Key": s3_key}
