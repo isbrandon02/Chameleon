@@ -121,6 +121,13 @@ export function getVideoOffers(
   return apiFetch<Offer[]>(`/videos/${videoId}/offers`, getToken);
 }
 
+export function getStreamUrl(
+  getToken: GetToken,
+  videoId: string
+): Promise<{ streamUrl: string }> {
+  return apiFetch<{ streamUrl: string }>(`/videos/${videoId}/stream-url`, getToken);
+}
+
 export function updateOfferStatus(
   getToken: GetToken,
   offerId: string,

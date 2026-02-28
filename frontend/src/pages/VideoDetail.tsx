@@ -27,6 +27,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import {
   createOffer,
+  getStreamUrl,
   getVideo,
   getVideoOffers,
   updateOfferStatus,
@@ -42,6 +43,7 @@ export default function VideoDetail() {
 
   const [video, setVideo] = useState<VideoRecord | null>(null);
   const [offers, setOffers] = useState<Offer[]>([]);
+  const [streamUrl, setStreamUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,12 +61,14 @@ export default function VideoDetail() {
   async function loadData() {
     if (!videoId) return;
     try {
-      const [vid, offs] = await Promise.all([
+      const [vid, offs, stream] = await Promise.all([
         getVideo(getAccessTokenSilently, videoId),
         getVideoOffers(getAccessTokenSilently, videoId),
+        getStreamUrl(getAccessTokenSilently, videoId),
       ]);
       setVideo(vid);
       setOffers(offs);
+      setStreamUrl(stream.streamUrl);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load");
     } finally {
@@ -197,6 +201,16 @@ export default function VideoDetail() {
             </Dialog>
           )}
         </div>
+
+        {/* Video Player */}
+        {streamUrl && (
+          <video
+            src={streamUrl}
+            controls
+            className="w-full rounded-lg bg-black"
+            style={{ maxHeight: "480px" }}
+          />
+        )}
 
         {/* Analysis Report */}
         {report && (

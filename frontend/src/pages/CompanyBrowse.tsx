@@ -12,7 +12,7 @@ export default function CompanyBrowse() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    listVideos(getAccessTokenSilently, "analyzed")
+    listVideos(getAccessTokenSilently)
       .then(setVideos)
       .catch((e) =>
         setError(e instanceof Error ? e.message : "Failed to load videos")
@@ -27,7 +27,7 @@ export default function CompanyBrowse() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold">Browse Videos</h1>
           <p className="mt-1 text-muted-foreground">
-            AI-analyzed videos ready for sponsorship
+            Videos available for sponsorship
           </p>
         </div>
 
