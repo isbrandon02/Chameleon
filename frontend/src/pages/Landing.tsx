@@ -83,7 +83,7 @@ export default function Landing() {
             <h1 className="animate-fade-up text-[clamp(2.8rem,6vw,4.5rem)] font-bold leading-[1.05] tracking-tight">
               Advertising
               <br />
-              That Disappears.
+              That Blends In
             </h1>
             <p className="anim-delay-1 mt-7 max-w-[26rem] text-[19px] leading-[1.7] text-white/40">
               Chameleon blends brands directly into video content.
