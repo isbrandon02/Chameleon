@@ -1,13 +1,25 @@
 import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { VideoRecord } from "@/lib/api";
 
-const statusColors: Record<VideoRecord["status"], string> = {
-  uploaded: "bg-yellow-100 text-yellow-800",
-  analyzing: "bg-blue-100 text-blue-800",
-  analyzed: "bg-green-100 text-green-800",
+const statusDot: Record<VideoRecord["status"], string> = {
+  uploaded: "bg-yellow-400",
+  analyzing: "bg-blue-400",
+  analyzed: "bg-emerald-400",
 };
+
+const thumbnailGradient = [
+  "from-violet-100 to-indigo-100",
+  "from-sky-100 to-cyan-100",
+  "from-rose-100 to-pink-100",
+  "from-amber-100 to-yellow-100",
+  "from-emerald-100 to-teal-100",
+];
+
+function pickGradient(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  return thumbnailGradient[Math.abs(hash) % thumbnailGradient.length];
+}
 
 interface Props {
   video: VideoRecord;
@@ -16,55 +28,53 @@ interface Props {
 
 export default function VideoCard({ video, offerCount }: Props) {
   const topics = video.analysisReport?.topics ?? [];
-  const hashtags = video.analysisReport?.hashtags ?? [];
 
   return (
     <Link to={`/videos/${video.videoId}`}>
-      <Card className="cursor-pointer transition-shadow hover:shadow-md">
-        <CardHeader className="pb-2">
-          <div className="flex items-start justify-between gap-2">
-            <CardTitle className="line-clamp-2 text-base">{video.title}</CardTitle>
-            <Badge className={statusColors[video.status]}>{video.status}</Badge>
+      <div className="group rounded-xl border border-neutral-100 bg-white transition-shadow hover:shadow-md">
+        {/* Thumbnail */}
+        <div className={`h-36 rounded-t-xl bg-gradient-to-br ${pickGradient(video.videoId)}`} />
+
+        {/* Content */}
+        <div className="p-4">
+          <div className="mb-1 flex items-center justify-between gap-2">
+            <p className="line-clamp-1 text-sm font-medium text-neutral-900">
+              {video.title}
+            </p>
+            <span className={`h-2 w-2 shrink-0 rounded-full ${statusDot[video.status]}`} />
           </div>
-        </CardHeader>
-        <CardContent>
+
           {video.description && (
-            <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">
+            <p className="mb-3 line-clamp-2 text-xs leading-relaxed text-neutral-400">
               {video.description}
             </p>
           )}
 
           {topics.length > 0 && (
-            <div className="mb-2 flex flex-wrap gap-1">
-              {topics.slice(0, 4).map((t) => (
-                <Badge key={t} variant="secondary" className="text-xs">
+            <div className="mb-3 flex flex-wrap gap-1">
+              {topics.slice(0, 3).map((t) => (
+                <span
+                  key={t}
+                  className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500"
+                >
                   {t}
-                </Badge>
-              ))}
-            </div>
-          )}
-
-          {hashtags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {hashtags.slice(0, 4).map((h) => (
-                <span key={h} className="text-xs text-muted-foreground">
-                  #{h}
                 </span>
               ))}
             </div>
           )}
 
-          {offerCount !== undefined && offerCount > 0 && (
-            <p className="mt-3 text-xs font-medium text-primary">
-              {offerCount} pending offer{offerCount !== 1 ? "s" : ""}
-            </p>
-          )}
-
-          <p className="mt-2 text-xs text-muted-foreground">
-            {new Date(video.createdAt).toLocaleDateString()}
-          </p>
-        </CardContent>
-      </Card>
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-neutral-300">
+              {new Date(video.createdAt).toLocaleDateString()}
+            </span>
+            {offerCount !== undefined && offerCount > 0 && (
+              <span className="text-xs font-medium text-violet-600">
+                {offerCount} offer{offerCount !== 1 ? "s" : ""}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
     </Link>
   );
 }
