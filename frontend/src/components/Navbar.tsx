@@ -47,6 +47,14 @@ export default function Navbar() {
               Browse
             </Link>
           )}
+          {(isCreator || isCompany) && (
+            <Link
+              to="/sponsored"
+              className="text-[14px] font-medium text-white/35 transition-colors hover:text-white"
+            >
+              Sponsored
+            </Link>
+          )}
 
           <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.06] text-[11px] font-semibold text-white/50">
             {user?.name?.slice(0, 2).toUpperCase() ?? "U"}

@@ -5,6 +5,7 @@ import AuthCallback from "@/pages/AuthCallback";
 import CompanyBrowse from "@/pages/CompanyBrowse";
 import CreatorDashboard from "@/pages/CreatorDashboard";
 import Landing from "@/pages/Landing";
+import SponsoredVideos from "@/pages/SponsoredVideos";
 import UploadVideo from "@/pages/UploadVideo";
 import VideoDetail from "@/pages/VideoDetail";
 
@@ -44,6 +45,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <VideoDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/sponsored"
+          element={
+            <ProtectedRoute>
+              <SponsoredVideos />
             </ProtectedRoute>
           }
         />

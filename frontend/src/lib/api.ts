@@ -59,6 +59,8 @@ export interface Offer {
   message?: string;
   status: "pending" | "accepted" | "rejected";
   createdAt: string;
+  editStatus?: "editing" | "complete" | "error";
+  editedVideoLocation?: string;
 }
 
 // ---- API calls ----
@@ -138,4 +140,18 @@ export function updateOfferStatus(
     method: "PATCH",
     body: JSON.stringify({ status }),
   });
+}
+
+export function getAcceptedOffers(getToken: GetToken): Promise<Offer[]> {
+  return apiFetch<Offer[]>("/offers/accepted", getToken);
+}
+
+export function getEditedStreamUrl(
+  getToken: GetToken,
+  offerId: string
+): Promise<{ streamUrl: string }> {
+  return apiFetch<{ streamUrl: string }>(
+    `/offers/${offerId}/edited-stream-url`,
+    getToken
+  );
 }
