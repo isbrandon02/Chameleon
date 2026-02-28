@@ -20,6 +20,9 @@ build/
 *.zip
 .elasticbeanstalk/
 
+# Model weights
+*.pt
+
 # OS
 .DS_Store
 Thumbs.db

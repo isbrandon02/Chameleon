@@ -14,11 +14,13 @@ export default function Navbar() {
   const isCompany = roles.includes("company");
 
   return (
-    <nav className="px-8 py-5">
-      <div className="mx-auto flex max-w-5xl items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-violet-500" />
-          <span className="text-base font-semibold tracking-tight text-neutral-900">
+    <nav className="px-8 py-5 border-b border-white/5">
+      <div className="mx-auto flex max-w-6xl items-center justify-between">
+        <Link to="/" className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-cham-green/15">
+            <span className="text-sm">🦎</span>
+          </div>
+          <span className="text-base font-semibold tracking-tight text-white">
             Chameleon
           </span>
         </Link>
@@ -28,13 +30,13 @@ export default function Navbar() {
             <>
               <Link
                 to="/dashboard"
-                className="text-sm text-neutral-400 transition-colors hover:text-neutral-900"
+                className="text-sm text-white/40 transition-colors hover:text-cham-green"
               >
                 My Videos
               </Link>
               <Link
                 to="/upload"
-                className="text-sm text-neutral-400 transition-colors hover:text-neutral-900"
+                className="text-sm text-white/40 transition-colors hover:text-cham-green"
               >
                 Upload
               </Link>
@@ -43,21 +45,21 @@ export default function Navbar() {
           {isCompany && (
             <Link
               to="/browse"
-              className="text-sm text-neutral-400 transition-colors hover:text-neutral-900"
+              className="text-sm text-white/40 transition-colors hover:text-cham-green"
             >
               Browse
             </Link>
           )}
 
-          <Avatar className="h-7 w-7">
+          <Avatar className="h-7 w-7 ring-1 ring-white/10">
             <AvatarImage src={user?.picture} alt={user?.name} />
-            <AvatarFallback className="text-xs">
+            <AvatarFallback className="bg-cham-green/10 text-xs text-cham-green">
               {user?.name?.slice(0, 2).toUpperCase() ?? "U"}
             </AvatarFallback>
           </Avatar>
 
           <button
-            className="text-neutral-300 transition-colors hover:text-neutral-600"
+            className="text-white/20 transition-colors hover:text-white/60"
             onClick={() =>
               logout({ logoutParams: { returnTo: window.location.origin } })
             }
