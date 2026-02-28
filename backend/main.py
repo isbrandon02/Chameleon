@@ -369,3 +369,59 @@ async def update_offer(
     if "proposedBudget" in item:
         item["proposedBudget"] = float(item["proposedBudget"])
     return item
+
+
+@app.get("/offers/accepted")
+async def get_accepted_offers(user: dict = Depends(get_current_user)):
+    """Return all accepted offers where the caller is the creator or company."""
+    user_id = user["sub"]
+    try:
+        response = offers_table.scan(
+            FilterExpression="#s = :s",
+            ExpressionAttributeNames={"#s": "status"},
+            ExpressionAttributeValues={":s": "accepted"},
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+    items = response.get("Items", [])
+    # Filter to only offers belonging to this user
+    items = [
+        i for i in items if i.get("creatorId") == user_id or i.get("companyId") == user_id
+    ]
+    for i in items:
+        if "proposedBudget" in i:
+            i["proposedBudget"] = float(i["proposedBudget"])
+    return items
+
+
+@app.get("/offers/{offerId}/edited-stream-url")
+async def get_edited_stream_url(offerId: str, user: dict = Depends(get_current_user)):
+    """Generate a presigned URL for the edited video associated with an accepted offer."""
+    try:
+        response = offers_table.get_item(Key={"offerId": offerId})
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+    item = response.get("Item")
+    if not item:
+        raise HTTPException(status_code=404, detail="Offer not found")
+
+    user_id = user["sub"]
+    if item.get("creatorId") != user_id and item.get("companyId") != user_id:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    edited_location = item.get("editedVideoLocation")
+    if not edited_location:
+        raise HTTPException(status_code=404, detail="Edited video not available yet")
+
+    s3_key = unquote(urlparse(edited_location).path.lstrip("/"))
+    try:
+        url = s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": S3_BUCKET, "Key": s3_key},
+            ExpiresIn=3600,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Could not generate stream URL: {exc}")
+    return {"streamUrl": url}
