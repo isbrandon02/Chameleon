@@ -1,3 +1,4 @@
+import json
 import os
 import uuid
 from datetime import datetime, timezone
@@ -40,6 +41,7 @@ AUTH0_AUDIENCE = os.environ.get("AUTH0_AUDIENCE", "https://api.chameleon.com")
 
 dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
 s3 = boto3.client("s3", region_name=AWS_REGION)
+events_client = boto3.client("events", region_name=AWS_REGION)
 
 videos_table = dynamodb.Table("videos")
 offers_table = dynamodb.Table("offers")
@@ -171,6 +173,8 @@ async def get_upload_url(
     video_id = str(uuid.uuid4())
     ext = fileName.rsplit(".", 1)[-1] if "." in fileName else "mp4"
     s3_key = f"videos/{creator_id}/{video_id}.{ext}"
+    # [dbg-a4817d] H:B-D
+    print(f"[dbg-a4817d] upload-url called: fileName={fileName!r} contentType={contentType!r} creator={creator_id!r} bucket={S3_BUCKET!r} key={s3_key!r}")
 
     try:
         upload_url = s3.generate_presigned_url(
@@ -182,7 +186,11 @@ async def get_upload_url(
             },
             ExpiresIn=3600,
         )
+        # [dbg-a4817d] H:B-D
+        print(f"[dbg-a4817d] presigned_url_ok: url_prefix={upload_url[:80]!r}")
     except Exception as exc:
+        # [dbg-a4817d] H:C
+        print(f"[dbg-a4817d] presigned_url_error: {exc!r}")
         raise HTTPException(status_code=500, detail=f"Could not generate upload URL: {exc}")
 
     return {"uploadUrl": upload_url, "videoId": video_id, "s3Key": s3_key}
@@ -344,6 +352,25 @@ async def update_offer(
     item = response.get("Attributes")
     if not item:
         raise HTTPException(status_code=404, detail="Offer not found")
+
+    # Emit EventBridge event so Lambda 3 can edit the video
+    if body.status == "accepted":
+        try:
+            events_client.put_events(Entries=[{
+                "Source": "chameleon.offers",
+                "DetailType": "OfferAccepted",
+                "Detail": json.dumps({
+                    "offerId": offerId,
+                    "videoId": item["videoId"],
+                    "companyId": item["companyId"],
+                    "creatorId": item["creatorId"],
+                }),
+                "EventBusName": "default",
+            }])
+        except Exception as exc:
+            # Non-fatal: offer is already updated; log and continue
+            print(f"[warn] EventBridge put_events failed: {exc}")
+
     # Convert Decimal proposedBudget back to float for response
     if "proposedBudget" in item:
         item["proposedBudget"] = float(item["proposedBudget"])
