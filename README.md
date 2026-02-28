@@ -69,11 +69,6 @@ Lambda: chameleon-video-edit
 
 ---
 
-## Live Demo
-
-- **App:** https://d3dwkbjj9nrcpp.cloudfront.net
-- **API:** https://uw88poluwh.execute-api.us-east-1.amazonaws.com
-
 ---
 
 ## Project Structure
