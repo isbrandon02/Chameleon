@@ -129,7 +129,7 @@ Build your React app and sync to the frontend S3 bucket:
 
 ```bash
 npm run build
-aws --profile chameleon s3 sync build/ s3://chameleon-frontend-730335328499 --delete
+aws --profile chameleon s3 sync dist/ s3://chameleon-frontend-730335328499 --delete
 ```
 
 The CloudFront distribution `d3dwkbjj9nrcpp.cloudfront.net` serves the frontend bucket. It:
