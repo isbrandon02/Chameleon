@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+*.egg
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+dist/
+build/
+
+# AWS / deployment artifacts
+*.zip
+.elasticbeanstalk/
+
+# OS
+.DS_Store
+Thumbs.db
