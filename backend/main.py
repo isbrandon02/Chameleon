@@ -1,3 +1,4 @@
+import json
 import os
 import uuid
 from datetime import datetime, timezone
@@ -21,9 +22,9 @@ app = FastAPI(title="Chameleon API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",
         "https://d3dwkbjj9nrcpp.cloudfront.net",
     ],
+    allow_origin_regex=r"http://localhost:\d+",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -40,6 +41,7 @@ AUTH0_AUDIENCE = os.environ.get("AUTH0_AUDIENCE", "https://api.chameleon.com")
 
 dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
 s3 = boto3.client("s3", region_name=AWS_REGION)
+events_client = boto3.client("events", region_name=AWS_REGION)
 
 videos_table = dynamodb.Table("videos")
 offers_table = dynamodb.Table("offers")
@@ -344,6 +346,25 @@ async def update_offer(
     item = response.get("Attributes")
     if not item:
         raise HTTPException(status_code=404, detail="Offer not found")
+
+    # Emit EventBridge event so Lambda 3 can edit the video
+    if body.status == "accepted":
+        try:
+            events_client.put_events(Entries=[{
+                "Source": "chameleon.offers",
+                "DetailType": "OfferAccepted",
+                "Detail": json.dumps({
+                    "offerId": offerId,
+                    "videoId": item["videoId"],
+                    "companyId": item["companyId"],
+                    "creatorId": item["creatorId"],
+                }),
+                "EventBusName": "default",
+            }])
+        except Exception as exc:
+            # Non-fatal: offer is already updated; log and continue
+            print(f"[warn] EventBridge put_events failed: {exc}")
+
     # Convert Decimal proposedBudget back to float for response
     if "proposedBudget" in item:
         item["proposedBudget"] = float(item["proposedBudget"])
