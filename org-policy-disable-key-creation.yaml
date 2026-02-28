@@ -1,0 +1,6 @@
+# Override iam.disableServiceAccountKeyCreation at org level
+# Allows creating service account keys (for Vertex AI, etc.)
+name: organizations/676346006510/policies/iam.disableServiceAccountKeyCreation
+spec:
+  rules:
+  - enforce: false
