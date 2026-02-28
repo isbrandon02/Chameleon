@@ -137,6 +137,7 @@ class CreateOfferRequest(BaseModel):
     videoId: str
     proposedBudget: float
     message: Optional[str] = None
+    productImageUrl: Optional[str] = None
 
 
 class OfferResponse(BaseModel):
@@ -148,6 +149,7 @@ class OfferResponse(BaseModel):
     creatorName: Optional[str] = None
     proposedBudget: float
     message: Optional[str] = None
+    productImageUrl: Optional[str] = None
     status: str
     createdAt: str
 
@@ -346,6 +348,27 @@ async def delete_video(
         pass
 
 
+@app.get("/offers/product-image-upload-url")
+async def get_product_image_upload_url(
+    fileName: str = Query(...),
+    contentType: str = Query(...),
+    user: dict = Depends(get_current_user),
+):
+    company_id = user["sub"]
+    ext = fileName.rsplit(".", 1)[-1] if "." in fileName else "jpg"
+    s3_key = f"product-images/{company_id}/{uuid.uuid4()}.{ext}"
+    try:
+        upload_url = s3.generate_presigned_url(
+            "put_object",
+            Params={"Bucket": S3_BUCKET, "Key": s3_key, "ContentType": contentType},
+            ExpiresIn=3600,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Could not generate upload URL: {exc}")
+    s3_url = f"s3://{S3_BUCKET}/{s3_key}"
+    return {"uploadUrl": upload_url, "s3Url": s3_url}
+
+
 @app.post("/offers", response_model=OfferResponse, status_code=status.HTTP_201_CREATED)
 async def create_offer(
     body: CreateOfferRequest,
@@ -372,6 +395,7 @@ async def create_offer(
         "creatorName": video.get("creatorName", ""),
         "proposedBudget": str(body.proposedBudget),
         "message": body.message or "",
+        "productImageUrl": body.productImageUrl or "",
         "status": "pending",
         "createdAt": datetime.now(timezone.utc).isoformat(),
     }
@@ -439,6 +463,24 @@ async def update_offer(
     if "proposedBudget" in item:
         item["proposedBudget"] = float(item["proposedBudget"])
     return item
+
+
+@app.get("/offers/product-image-url")
+async def get_product_image_url(
+    s3Url: str = Query(...),
+    user: dict = Depends(get_current_user),
+):
+    """Generate a presigned GET URL for a product image stored in S3."""
+    s3_key = unquote(urlparse(s3Url).path.lstrip("/"))
+    try:
+        url = s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": S3_BUCKET, "Key": s3_key},
+            ExpiresIn=3600,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+    return {"url": url}
 
 
 @app.get("/offers/accepted")

@@ -1,11 +1,13 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { Check, X } from "lucide-react";
+import { Check, ImagePlus, X } from "lucide-react";
 import PageShell from "@/components/PageShell";
 import {
   createOffer,
+  getProductImageUploadUrl,
+  getProductImageUrl,
   getStreamUrl,
   getVideo,
   getVideoOffers,
@@ -37,8 +39,12 @@ export default function VideoDetail() {
 
   const [offerBudget, setOfferBudget] = useState("");
   const [offerMessage, setOfferMessage] = useState("");
+  const [productImageFile, setProductImageFile] = useState<File | null>(null);
+  const [productImagePreview, setProductImagePreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [offerImages, setOfferImages] = useState<Record<string, string>>({});
 
   const roles = ((user?.[ROLES_CLAIM] as string[] | undefined) ?? []).map((r) =>
     r.toLowerCase()
@@ -57,6 +63,7 @@ export default function VideoDetail() {
       setVideo(vid);
       setOffers(offs);
       setStreamUrl(stream.streamUrl);
+      await loadOfferImages(offs);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load");
     } finally {
@@ -68,20 +75,65 @@ export default function VideoDetail() {
     loadData();
   }, [videoId]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setProductImageFile(file);
+    setProductImagePreview(URL.createObjectURL(file));
+  }
+
+  function handleRemoveImage() {
+    setProductImageFile(null);
+    setProductImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  async function loadOfferImages(offerList: Offer[]) {
+    const withImages = offerList.filter((o) => o.productImageUrl);
+    const results = await Promise.all(
+      withImages.map(async (o) => {
+        try {
+          const { url } = await getProductImageUrl(getAccessTokenSilently, o.productImageUrl!);
+          return { offerId: o.offerId, url };
+        } catch {
+          return null;
+        }
+      })
+    );
+    const map: Record<string, string> = {};
+    for (const r of results) if (r) map[r.offerId] = r.url;
+    setOfferImages(map);
+  }
+
   async function handleMakeOffer(e: React.FormEvent) {
     e.preventDefault();
     if (!videoId) return;
     setSubmitting(true);
     try {
+      let productImageUrl: string | undefined;
+      if (productImageFile) {
+        const { uploadUrl, s3Url } = await getProductImageUploadUrl(getAccessTokenSilently, {
+          fileName: productImageFile.name,
+          contentType: productImageFile.type || "image/jpeg",
+        });
+        await fetch(uploadUrl, {
+          method: "PUT",
+          body: productImageFile,
+          headers: { "Content-Type": productImageFile.type || "image/jpeg" },
+        });
+        productImageUrl = s3Url;
+      }
       await createOffer(getAccessTokenSilently, {
         videoId,
         proposedBudget: parseFloat(offerBudget),
         message: offerMessage.trim() || undefined,
+        productImageUrl,
       });
       toast.success("Offer submitted!");
       setDialogOpen(false);
       setOfferBudget("");
       setOfferMessage("");
+      handleRemoveImage();
       await loadData();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to submit offer");
@@ -228,25 +280,34 @@ export default function VideoDetail() {
                 {offers.map((o) => (
                   <div
                     key={o.offerId}
-                    className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-white/[0.02] p-4"
+                    className="flex items-start justify-between rounded-xl border border-white/[0.04] bg-white/[0.02] p-4"
                   >
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-3">
-                        <span className="text-[14px] font-medium text-white/70">
-                          ${o.proposedBudget.toLocaleString()}
-                        </span>
-                        <span
-                          className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${statusStyles[o.status] ?? "bg-white/[0.06] text-white/40"}`}
-                        >
-                          {o.status}
-                        </span>
-                      </div>
-                      <p className="mt-0.5 text-[12px] text-white/25">
-                        {o.companyName || o.companyId}
-                      </p>
-                      {o.message && (
-                        <p className="mt-1 truncate text-[13px] text-white/25">{o.message}</p>
+                    <div className="flex min-w-0 flex-1 gap-3">
+                      {offerImages[o.offerId] && (
+                        <img
+                          src={offerImages[o.offerId]}
+                          alt="Product"
+                          className="h-14 w-14 shrink-0 rounded-lg object-cover"
+                        />
                       )}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-3">
+                          <span className="text-[14px] font-medium text-white/70">
+                            ${o.proposedBudget.toLocaleString()}
+                          </span>
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${statusStyles[o.status] ?? "bg-white/[0.06] text-white/40"}`}
+                          >
+                            {o.status}
+                          </span>
+                        </div>
+                        <p className="mt-0.5 text-[12px] text-white/25">
+                          {o.companyName || o.companyId}
+                        </p>
+                        {o.message && (
+                          <p className="mt-1 truncate text-[13px] text-white/25">{o.message}</p>
+                        )}
+                      </div>
                     </div>
 
                     {o.status === "pending" && (
@@ -308,6 +369,44 @@ export default function VideoDetail() {
                     className="w-full resize-none rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 text-[14px] text-white placeholder-white/20 outline-none focus:border-[#4ADE80]/30 disabled:opacity-50"
                   />
                 </div>
+                <div>
+                  <label className="mb-2 block text-[13px] font-medium text-white/50">
+                    Product Image <span className="text-white/25">(optional)</span>
+                  </label>
+                  {productImagePreview ? (
+                    <div className="relative inline-block">
+                      <img
+                        src={productImagePreview}
+                        alt="Product preview"
+                        className="h-24 w-24 rounded-xl object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#111916] border border-white/[0.1] text-white/50 hover:text-white"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex items-center gap-2 rounded-xl border border-dashed border-white/[0.1] px-4 py-3 text-[13px] text-white/30 transition-colors hover:border-white/20 hover:text-white/50"
+                    >
+                      <ImagePlus className="h-4 w-4" />
+                      Upload product image
+                    </button>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageSelect}
+                  />
+                </div>
+
                 <div className="flex gap-3">
                   <button
                     type="submit"

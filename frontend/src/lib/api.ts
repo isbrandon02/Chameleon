@@ -60,6 +60,7 @@ export interface Offer {
   creatorName?: string;
   proposedBudget: number;
   message?: string;
+  productImageUrl?: string;
   status: "pending" | "accepted" | "rejected";
   createdAt: string;
   editStatus?: "editing" | "complete" | "error";
@@ -110,9 +111,29 @@ export function getVideo(
   return apiFetch<VideoRecord>(`/videos/${videoId}`, getToken);
 }
 
+export function getProductImageUploadUrl(
+  getToken: GetToken,
+  params: { fileName: string; contentType: string }
+): Promise<{ uploadUrl: string; s3Url: string }> {
+  return apiFetch<{ uploadUrl: string; s3Url: string }>(
+    `/offers/product-image-upload-url?fileName=${encodeURIComponent(params.fileName)}&contentType=${encodeURIComponent(params.contentType)}`,
+    getToken
+  );
+}
+
+export function getProductImageUrl(
+  getToken: GetToken,
+  s3Url: string
+): Promise<{ url: string }> {
+  return apiFetch<{ url: string }>(
+    `/offers/product-image-url?s3Url=${encodeURIComponent(s3Url)}`,
+    getToken
+  );
+}
+
 export function createOffer(
   getToken: GetToken,
-  body: { videoId: string; proposedBudget: number; message?: string }
+  body: { videoId: string; proposedBudget: number; message?: string; productImageUrl?: string }
 ): Promise<Offer> {
   return apiFetch<Offer>("/offers", getToken, {
     method: "POST",
