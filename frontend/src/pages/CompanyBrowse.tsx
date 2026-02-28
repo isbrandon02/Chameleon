@@ -3,21 +3,38 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import VideoCard from "@/components/VideoCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { listVideos, type VideoRecord } from "@/lib/api";
+import { listVideos, getStreamUrl, type VideoRecord } from "@/lib/api";
 
 export default function CompanyBrowse() {
   const { getAccessTokenSilently } = useAuth0();
   const [videos, setVideos] = useState<VideoRecord[]>([]);
+  const [streamUrls, setStreamUrls] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    listVideos(getAccessTokenSilently)
-      .then(setVideos)
-      .catch((e) =>
-        setError(e instanceof Error ? e.message : "Failed to load videos")
-      )
-      .finally(() => setLoading(false));
+    (async () => {
+      try {
+        const vids = await listVideos(getAccessTokenSilently);
+        setVideos(vids);
+
+        const urls = await Promise.all(
+          vids.map(async (v) => {
+            try {
+              const { streamUrl } = await getStreamUrl(getAccessTokenSilently, v.videoId);
+              return { id: v.videoId, url: streamUrl };
+            } catch {
+              return { id: v.videoId, url: "" };
+            }
+          })
+        );
+        setStreamUrls(Object.fromEntries(urls.map(({ id, url }) => [id, url])));
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Failed to load videos");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -50,7 +67,7 @@ export default function CompanyBrowse() {
         {!loading && videos.length > 0 && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {videos.map((v) => (
-              <VideoCard key={v.videoId} video={v} />
+              <VideoCard key={v.videoId} video={v} streamUrl={streamUrls[v.videoId]} />
             ))}
           </div>
         )}
