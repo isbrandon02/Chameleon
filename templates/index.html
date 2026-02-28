@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Placement</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: #0f0f12;
+      color: #e8e8e8;
+      min-height: 100vh;
+    }
+    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+    p { color: #909099; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .field { margin-bottom: 1.25rem; }
+    label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.4rem; }
+    input[type="file"] {
+      display: block; width: 100%; padding: 0.75rem;
+      background: #1a1a1f; border: 1px solid #2a2a32; border-radius: 8px;
+      color: #e8e8e8; font-size: 0.9rem;
+    }
+    input[type="file"]::file-selector-button {
+      background: #333; border: none; padding: 0.4rem 0.8rem; border-radius: 6px;
+      color: #e8e8e8; margin-right: 0.75rem; cursor: pointer;
+    }
+    input[type="checkbox"] { margin-right: 0.5rem; }
+    select {
+      width: 100%; padding: 0.75rem; background: #1a1a1f;
+      border: 1px solid #2a2a32; border-radius: 8px; color: #e8e8e8; font-size: 0.9rem;
+    }
+    button {
+      width: 100%; padding: 0.9rem; background: #3b82f6; color: white; border: none;
+      border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer;
+    }
+    button:hover { background: #2563eb; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .progress-container { margin-top: 1rem; display: none; }
+    .progress-container.active { display: block; }
+    .progress-bar { width: 100%; height: 10px; background: #2a2a32; border-radius: 5px; overflow: hidden; margin-bottom: 0.5rem; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); border-radius: 5px; transition: width 0.3s ease; width: 0%; }
+    .progress-text { font-size: 0.85rem; color: #909099; }
+    .status { margin-top: 1rem; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; }
+    .status.info { background: #1e3a5f; color: #93c5fd; }
+    .status.error { background: #3f1f1f; color: #fca5a5; }
+    .status.success { background: #1f3f2f; color: #86efac; }
+    .row { display: flex; gap: 1rem; margin: 0.4rem 0; }
+    .row span { display: flex; align-items: center; gap: 0.3rem; }
+    .row input { padding: 0.3rem; background: #1a1a1f; border: 1px solid #2a2a32; border-radius: 6px; color: #e8e8e8; }
+    small { display: block; margin-top: 0.5rem; color: #909099; }
+    .sub-field { margin-left: 1.25rem; margin-top: 0.75rem; }
+  </style>
+</head>
+<body>
+  <h1>Product Placement</h1>
+  <p><strong>Product placement</strong> replaces bottles/cups with your product. <strong>Logo placement</strong> puts your logo on the wall as a poster. You can use one or both.</p>
+
+  <form id="form">
+    <div class="field">
+      <label for="video">Video</label>
+      <input type="file" id="video" name="video" accept="video/mp4,video/webm,video/quicktime,.mp4,.mov,.avi,.webm,.mkv" required>
+    </div>
+
+    <div class="field">
+      <label><input type="checkbox" id="fastMode"> Fast mode (faster, slightly lower quality; local pipeline only)</label>
+    </div>
+
+    <div class="field">
+      <label><input type="checkbox" id="doProduct" checked> Product placement (replace bottle/cup)</label>
+      <div class="sub-field" id="productFields">
+        <label for="product">Product image (PNG/JPG)</label>
+        <input type="file" id="product" name="product" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp">
+        <label for="target" style="margin-top:0.5rem">Object to replace</label>
+        <select id="target" name="target_class">
+          <option value="bottle" selected>bottle</option>
+          <option value="cup">cup</option>
+          <option value="wine glass">wine glass</option>
+          <option value="cell phone">cell phone</option>
+          <option value="book">book</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label><input type="checkbox" id="doLogo"> Logo placement (poster on wall)</label>
+      <div class="sub-field" id="logoFields" style="display:none">
+        <label for="logo">Logo image (PNG/JPG) — background removed automatically</label>
+        <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp">
+        <label style="margin-top:0.5rem"><input type="checkbox" id="posterAuto" checked> Auto-detect best spot on wall</label>
+        <div id="posterManual" style="display:none; margin-top:0.5rem">
+          <label>Poster region (% of frame)</label>
+          <div class="row">
+            <span>X: <input type="number" id="posterX" min="0" max="90" value="30" style="width:4em">%</span>
+            <span>Y: <input type="number" id="posterY" min="0" max="90" value="15" style="width:4em">%</span>
+          </div>
+          <div class="row">
+            <span>W: <input type="number" id="posterW" min="5" max="80" value="40" style="width:4em">%</span>
+            <span>H: <input type="number" id="posterH" min="5" max="80" value="30" style="width:4em">%</span>
+          </div>
+        </div>
+        <small>Auto finds natural wall space. Column logos get taller region. Manual = X,Y top-left, W,H size.</small>
+      </div>
+    </div>
+
+    <button type="submit" id="submit">Process → Get Video</button>
+  </form>
+
+  <div class="progress-container" id="progressContainer">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">Starting...</div>
+  </div>
+
+  <div id="status"></div>
+
+  <script>
+    const form = document.getElementById("form");
+    const submitBtn = document.getElementById("submit");
+    const statusEl = document.getElementById("status");
+    const progressContainer = document.getElementById("progressContainer");
+    const progressFill = document.getElementById("progressFill");
+    const progressText = document.getElementById("progressText");
+
+    function setStatus(msg, type = "info") {
+      statusEl.textContent = msg;
+      statusEl.className = "status " + type;
+      statusEl.style.display = msg ? "block" : "none";
+    }
+
+    function showProgress(active) {
+      progressContainer.classList.toggle("active", !!active);
+      if (!active) { progressFill.style.width = "0%"; progressText.textContent = ""; }
+    }
+
+    function updateProgress(pct, msg) {
+      progressFill.style.width = pct + "%";
+      progressText.textContent = msg || pct + "%";
+    }
+
+    document.getElementById("doProduct").addEventListener("change", function() {
+      document.getElementById("productFields").style.display = this.checked ? "block" : "none";
+      document.getElementById("product").required = this.checked;
+    });
+
+    document.getElementById("doLogo").addEventListener("change", function() {
+      document.getElementById("logoFields").style.display = this.checked ? "block" : "none";
+      document.getElementById("logo").required = this.checked;
+    });
+    document.getElementById("posterAuto").addEventListener("change", function() {
+      document.getElementById("posterManual").style.display = this.checked ? "none" : "block";
+    });
+
+    async function pollAndDownload(jobId) {
+      // 2400 × 500ms = 20 min (Veo can take 2–15 min; local pipeline can be slow)
+      for (let i = 0; i < 2400; i++) {
+        const res = await fetch("/api/status/" + jobId);
+        const data = await res.json();
+        updateProgress(data.progress || 0, data.message);
+
+        if (data.status === "done") {
+          showProgress(false);
+          const dl = await fetch("/api/result/" + jobId);
+          if (!dl.ok) {
+            const err = await dl.json().catch(() => ({}));
+            setStatus(err.error || "Download failed", "error");
+            submitBtn.disabled = false;
+            return;
+          }
+          const blob = await dl.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "output.mp4";
+          a.click();
+          URL.revokeObjectURL(url);
+          setStatus("Done! Video downloaded.", "success");
+          submitBtn.disabled = false;
+          return;
+        }
+
+        if (data.status === "error") {
+          showProgress(false);
+          setStatus(data.error || "Processing failed", "error");
+          submitBtn.disabled = false;
+          return;
+        }
+
+        await new Promise(r => setTimeout(r, 500));
+      }
+      showProgress(false);
+      setStatus("Timeout. Try again.", "error");
+      submitBtn.disabled = false;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const video = document.getElementById("video").files[0];
+      const doProduct = document.getElementById("doProduct").checked;
+      const doLogo = document.getElementById("doLogo").checked;
+      const product = document.getElementById("product").files[0];
+      const logo = document.getElementById("logo").files[0];
+
+      if (!video) {
+        setStatus("Please select a video.", "error");
+        return;
+      }
+      if (!doProduct && !doLogo) {
+        setStatus("Enable at least one: product placement or logo placement.", "error");
+        return;
+      }
+      if (doProduct && !product) {
+        setStatus("Please select a product image.", "error");
+        return;
+      }
+      if (doLogo && !logo) {
+        setStatus("Please select a logo image.", "error");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      setStatus("");
+      showProgress(true);
+      updateProgress(0, "Uploading...");
+
+      const fd = new FormData();
+      fd.append("video", video);
+      fd.append("target_class", document.getElementById("target").value);
+      fd.append("poster_auto", document.getElementById("posterAuto").checked ? "true" : "false");
+      fd.append("poster_x", document.getElementById("posterX").value || 30);
+      fd.append("poster_y", document.getElementById("posterY").value || 15);
+      fd.append("poster_w", document.getElementById("posterW").value || 40);
+      fd.append("poster_h", document.getElementById("posterH").value || 30);
+      fd.append("fast", document.getElementById("fastMode").checked ? "true" : "false");
+      if (doProduct) fd.append("product", product);
+      if (doLogo) fd.append("logo", logo);
+
+      try {
+        const res = await fetch("/api/process", { method: "POST", body: fd });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showProgress(false);
+          setStatus(data.error || "Upload failed", "error");
+          submitBtn.disabled = false;
+          return;
+        }
+
+        updateProgress(0, "Processing...");
+        pollAndDownload(data.job_id);
+      } catch (err) {
+        showProgress(false);
+        setStatus(err.message || "Request failed", "error");
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
